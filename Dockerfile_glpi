@@ -1,0 +1,14 @@
+FROM debian:trixie-backports
+
+RUN mkdir -p /home/glpi
+
+WORKDIR /home/GLPI
+
+RUN apt update && apt upgrade 
+
+RUN apt install apache2 mariadb-server php-cli php-fpm php-mysql php-json php-gd php-curl php-intl php-zip php-xml php-mbstring php-ldap php-cas php-apcu php-xmlrpc php-cas php-imap php-bz2 -y
+
+CMD [ "mysqld" ]
+
+CMD ["apachectl"]
+
