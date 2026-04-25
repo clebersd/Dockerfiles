@@ -21,9 +21,9 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 ENV MYSQL_ROOT_PASSWORD=1234567
 
-COPY ./script.sh $HOME/script.sh 
+COPY ./script.sh /home/lamp/script.sh 
 
-RUN chmod +x $HOME/script.sh 
+RUN chmod +x /home/lamp/script.sh 
 
 CMD ["/home/lamp/script.sh"] 
 
