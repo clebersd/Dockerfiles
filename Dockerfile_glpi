@@ -1,20 +1,30 @@
 FROM debian:trixie-backports
 
-RUN mkdir -p /home/glpi
+ARG DEBIAN_FRONTEND=nointeractive
 
-WORKDIR /home/GLPI
+VOLUME [ "/home/lamp" ]
 
-RUN apt update && apt install -y lsb-release ca-certificates curl && \
-    curl -sSLo /tmp/debsury.gpg https://packages.sury.org/php/apt.gpg && \
-    mkdir -p /etc/apt/keyrings && \
-    mv /tmp/debsury.gpg /etc/apt/keyrings/sury-php.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/sury-php.list && \
-    apt-get update
+ENV HOME=/home/lamp 
+
+WORKDIR $HOME
 
 
-RUN apt install apache2 mariadb-server php-cli php-fpm php-mysql php-json php-gd php-curl php-intl php-zip php-xml php-mbstring php-ldap php-cas php-apcu php-xmlrpc php-cas php-imap php-bz2 -y
+RUN apt update && apt upgrade -y 
 
-CMD [ "mysqld" ]
+RUN echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections && \
+    echo "phpmyadmin phpmyadmin/dbconfig-install boolean false" | debconf-set-selections
 
-CMD ["apachectl"]
+RUN mkdir -p /run/mysqld 
+RUN apt install apache2 mariadb-server php php-mysql phpmyadmin -y
 
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+ENV MYSQL_ROOT_PASSWORD=1234567
+
+COPY ./script.sh $HOME/script.sh 
+
+RUN chmod +x $HOME/script.sh 
+
+CMD ["/home/lamp/script.sh"] 
+
+EXPOSE 80 3306
