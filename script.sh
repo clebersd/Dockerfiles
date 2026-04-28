@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apachectl start & 
+apachectl start ; 
 
-mysqld_safe --user=root &
+mysqld_safe --user=root 
 
